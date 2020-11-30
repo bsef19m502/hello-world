@@ -1,0 +1,157 @@
+<html>
+<canvas id="gameCanvas" width="800" height="600" , ></canvas>
+<script>
+var canvas;
+var convasContext;
+var ballx=50;
+var bally=50;
+var ballSpeedx=10;
+var ballSpeedy=5;
+var paddle1Y=250;
+var paddle2Y=250;
+const PADDLE_HEIGHT=100;
+const PADDLE_THICKNESS=10;
+
+var player1Score = 0;
+var player2Score = 0;
+const WINNING_SCORE = 3;
+
+var showScreen = false;
+function calculateMousePos(evt){
+	var rect=canvas.getBoundingClientRect();
+	var root=document.documentElement;
+	var mouseX=evt.clientX-rect.left-root.scrollLeft;
+	var mouseY=evt.clientY-rect.top-root.scrollTop;
+	return{
+		x:mouseX,
+		y:mouseY,
+		};
+}
+function handleMouseClick(evt){
+	if(showScreen ){
+	player1Score = 0;
+	player2Score =0;
+	showScreen = false;
+	}
+}
+   window.onload=function()
+{   
+   console.log("Hello, it's Azka , Software Engineer ");
+   canvas=document.getElementById("gameCanvas");
+   canvasContext=canvas.getContext("2d");
+   
+   var framesPerSecond=30;
+   setInterval(function(){
+   	moveEverything();
+	drawEverything();}
+   , 1000/framesPerSecond);
+   
+   canvas.addEventListener('mousedown',handleMouseClick);
+   canvas.addEventListener('mousemove',
+				function(evt){
+					var mousePos=calculateMousePos(evt);
+					paddle1Y=mousePos.y-(PADDLE_HEIGHT/2)});
+
+}
+function ballReset(){
+	if(player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE){
+	            showScreen = true;
+		
+				}
+	ballSpeedx=-ballSpeedx;
+	ballx=canvas.width/2;
+	bally=canvas.height/2;
+	
+	}
+function computerMovement(){
+    var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
+	if(paddle2YCenter < bally - 35){
+	paddle2Y += 6;
+	}else if(paddle2YCenter > bally + 35){
+
+	paddle2Y -=6;}
+	
+}
+function moveEverything(){
+	if(showScreen){
+	return;
+	}
+	computerMovement();
+    ballx += ballSpeedx;
+	bally += ballSpeedy;
+	if(ballx < 0)
+	{
+	if(bally > paddle1Y && bally < paddle1Y+PADDLE_HEIGHT){
+		ballSpeedx=-ballSpeedx;
+		
+		var deltaY = bally - (paddle1Y+PADDLE_HEIGHT/2);
+		ballSpeedy = deltaY*0.35;
+		
+}else{
+	player2Score++;
+	ballReset();
+	}
+	}
+	if(ballx > canvas.width){
+	if(bally > paddle2Y && bally < paddle2Y+PADDLE_HEIGHT){
+		ballSpeedx=-ballSpeedx;
+		
+		var deltaY = bally - (paddle2Y+PADDLE_HEIGHT/2);
+		ballSpeedy = deltaY*0.35;
+}else{	
+    player1Score++;
+	ballReset();
+	}
+	}
+	if(bally < 0){
+	ballSpeedy=-ballSpeedy;
+	}
+	if(bally > canvas.height){
+	ballSpeedy=-ballSpeedy;
+	}
+	}
+function drawNet(){
+	for(var i=0; i<=canvas.height ; i+=40)
+	{
+	colorRect(canvas.width/2-1,i,2,20,"white");
+	}
+}
+function drawEverything(){
+	colorRect(0,0,canvas.width,canvas.height,"purple") //blanks screen purple
+	if(showScreen){
+	canvasContext.fillStyle="white";
+		if(player1Score >= WINNING_SCORE){
+		    canvasContext.font = "30px sans-serif";
+			canvasContext.fillText("Left player won!",300,200);
+}else if(player2Score >= WINNING_SCORE){
+		    canvasContext.font = "30px sans-serif";
+			canvasContext.fillText("Right player won!",300,200);
+}
+	canvasContext.fillText("Click to countinue",300,500);
+	return;
+	}
+	drawNet();
+	colorRect(0,paddle1Y,PADDLE_THICKNESS,PADDLE_HEIGHT,"white")			//this is left palyer paddle
+	colorRect(canvas.width-PADDLE_THICKNESS,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT,"white")			//this is right palyer paddle
+	colorCircle(ballx,bally,10,"white")
+	canvasContext.font = "30px sans-serif";
+	canvasContext.fillText(player1Score,100,100);
+	canvasContext.font = "30px sans-serif";
+    canvasContext.fillText(player2Score,canvas.width-100,100);
+   }
+function colorCircle(centerX,centerY,radius,colorC)
+{	
+    canvasContext.fillstyle=colorC;		//this draws the ball
+	canvasContext.beginPath();
+	canvasContext.arc(centerX,centerY,radius,0,Math.PI*2,true)
+	canvasContext.fill();
+}
+	
+function colorRect(leftX,topY,width,height,rectColor) //to make different colored shape
+{
+   canvasContext.fillStyle=rectColor;
+   canvasContext.fillRect(leftX,topY,width,height);
+}
+</script>
+
+</html>
